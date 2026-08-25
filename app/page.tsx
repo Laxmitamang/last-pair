@@ -1,6 +1,9 @@
 import { Storefront } from "./storefront";
-import { products } from "./products";
+import { getCatalogueProducts } from "../db/catalogue";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const products = await getCatalogueProducts();
   return <Storefront products={products} />;
 }
