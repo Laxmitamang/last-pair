@@ -11,11 +11,13 @@ The project is also a practical learning environment for modern web development,
 - UK shoe-size selection
 - Interactive shopping bag
 - Retail-price and customer-savings calculations
-- Product catalogue API
-- Automated rendering and API tests
+- PostgreSQL-backed product catalogue and inventory
+- Database-backed product catalogue API
+- Drizzle schema, migrations, and repeatable seed data
+- Automated database integration and API tests
 - Initial GitHub Actions quality workflow
 
-Product names are currently fictional, and no brand partnerships are implied. Authentication, persistent inventory, and checkout are planned but not yet implemented.
+Product names are currently fictional, and no brand partnerships are implied. Authentication and checkout are planned but not yet implemented.
 
 ## Requirements
 
@@ -26,17 +28,31 @@ Product names are currently fictional, and no brand partnerships are implied. Au
 
 ```bash
 pnpm install
-pnpm run dev
+docker compose up -d
+pnpm db:migrate
+pnpm db:seed
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
 Stop the development server with `Control + C`.
 
+PostgreSQL runs locally in Docker and persists its data in the
+`last-pair_postgres_data` volume. Stop it without deleting its data:
+
+```bash
+docker compose stop
+```
+
+Copy `.env.example` to `.env` before running database commands. Keep the real
+`.env` file out of Git.
+
 ## Quality checks
 
 ```bash
 pnpm lint
+pnpm typecheck
 pnpm build
 pnpm test:rendered
 ```
