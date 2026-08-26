@@ -1,0 +1,16 @@
+.git
+.github
+.next
+node_modules
+.env
+.env.*
+*.log
+*.tsbuildinfo
+coverage
+dist
+.wrangler
+tests
+drizzle
+README.md
+compose.yaml
+.DS_Store
