@@ -24,8 +24,10 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN pnpm build
-
+RUN DATABASE_URL="postgresql://build_user:build_password@localhost:5432/build_database" \
+    BETTER_AUTH_URL="http://localhost:3000" \
+    BETTER_AUTH_SECRET="build-only-placeholder-1234567890123456" \
+    pnpm build
 
 FROM node:22-alpine AS runner
 
