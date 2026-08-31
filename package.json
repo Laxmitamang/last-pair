@@ -16,9 +16,11 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "auth:schema": "auth generate --config lib/auth.ts --output db/auth-schema.ts --yes"
   },
   "dependencies": {
+    "better-auth": "^1.7.2",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "postgres": "^3.4.9",
@@ -30,6 +32,7 @@
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "auth": "1.7.2",
     "dotenv": "^17.4.2",
     "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",

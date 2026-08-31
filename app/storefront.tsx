@@ -32,7 +32,7 @@ export function Storefront({products}:{products:Product[]}) {
       <a className="brand" href="#top">LAST PAIR<span>●</span></a>
       <button className="menu-button" onClick={()=>setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>Menu</button>
       <nav className={menuOpen?"nav-links open":"nav-links"}><a href="#drop">Latest drop</a><a href="#how">How it works</a><a href="#mission">Our mission</a></nav>
-      <div className="header-actions"><button className="text-button">Sign in</button><button className="cart-button" onClick={()=>setCartOpen(true)}>Bag <span>{itemCount}</span></button></div>
+      <div className="header-actions"><a className="text-button" href="/login">Sign in</a><button className="cart-button" onClick={()=>setCartOpen(true)}>Bag <span>{itemCount}</span></button></div>
     </header>
 
     <section className="shoe-hero" id="top">
