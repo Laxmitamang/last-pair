@@ -4,10 +4,11 @@ import { useMemo, useState } from "react";
 import type { Product } from "./products";
 
 type CartLine = Product & { quantity:number; selectedSize:string };
+type Customer = { name:string; email:string };
 const categories = ["All", "Trainers", "Running", "Casual"] as const;
 const money = (n:number) => new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP",maximumFractionDigits:0}).format(n);
 
-export function Storefront({products}:{products:Product[]}) {
+export function Storefront({products,customer}:{products:Product[];customer:Customer|null}) {
   const [category,setCategory] = useState<(typeof categories)[number]>("All");
   const [query,setQuery] = useState("");
   const [cart,setCart] = useState<CartLine[]>([]);
@@ -17,6 +18,8 @@ export function Storefront({products}:{products:Product[]}) {
   const visible = useMemo(() => products.filter(p => (category === "All" || p.category === category) && `${p.name} ${p.brand} ${p.color}`.toLowerCase().includes(query.toLowerCase())),[products,category,query]);
   const itemCount = cart.reduce((n,p)=>n+p.quantity,0);
   const subtotal = cart.reduce((n,p)=>n+p.price*p.quantity,0);
+  const accountLabel = customer ? customer.name.trim().split(/\s+/)[0] || "My account" : "Sign in";
+  const accountHref = customer ? "/account" : "/login";
 
   function add(product:Product){
     const selectedSize = selectedSizes[product.id] || product.sizes[0];
@@ -31,8 +34,8 @@ export function Storefront({products}:{products:Product[]}) {
     <header className="site-header">
       <a className="brand" href="#top">LAST PAIR<span>●</span></a>
       <button className="menu-button" onClick={()=>setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>Menu</button>
-      <nav className={menuOpen?"nav-links open":"nav-links"}><a href="#drop">Latest drop</a><a href="#how">How it works</a><a href="#mission">Our mission</a></nav>
-      <div className="header-actions"><a className="text-button" href="/login">Sign in</a><button className="cart-button" onClick={()=>setCartOpen(true)}>Bag <span>{itemCount}</span></button></div>
+      <nav className={menuOpen?"nav-links open":"nav-links"}><a href="#drop">Latest drop</a><a href="#how">How it works</a><a href="#mission">Our mission</a><a className="mobile-account-link" href={accountHref}>{accountLabel}</a></nav>
+      <div className="header-actions"><a className="header-account-link" href={accountHref}>{accountLabel}</a><button className="cart-button" onClick={()=>setCartOpen(true)}>Bag <span>{itemCount}</span></button></div>
     </header>
 
     <section className="shoe-hero" id="top">
