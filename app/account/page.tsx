@@ -3,6 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "../../lib/auth";
+import { hasAdminRole } from "../../lib/authorization";
 import { LogoutButton } from "./logout-button";
 
 export const metadata: Metadata = { title: "Your account — Last Pair" };
@@ -36,6 +37,14 @@ export default async function AccountPage() {
             <p>Saved shoes and order history will live here as we build the next parts of the store.</p>
             <Link href="/#drop">Browse the latest drop →</Link>
           </article>
+          {hasAdminRole(session.user.role) && (
+            <article className="account-coming-soon">
+              <span>03</span>
+              <h2>Store administration</h2>
+              <p>Review catalogue activity and manage the operational side of Last Pair.</p>
+              <Link href="/admin">Open admin dashboard →</Link>
+            </article>
+          )}
         </div>
       </section>
     </main>

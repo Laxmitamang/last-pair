@@ -15,6 +15,13 @@
       "when": 1788161718082,
       "tag": "0001_secret_killraven",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789028533505,
+      "tag": "0002_lazy_northstar",
+      "breakpoints": true
     }
   ]
 }
