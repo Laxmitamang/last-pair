@@ -31,6 +31,11 @@ export async function getCatalogueProducts(): Promise<Product[]> {
 
     if (existing) {
       existing.sizes.push(size);
+      existing.variants.push({
+        id: variant.id,
+        size,
+        stockQuantity: variant.stockQuantity,
+      });
       continue;
     }
 
@@ -43,6 +48,11 @@ export async function getCatalogueProducts(): Promise<Product[]> {
       originalPrice: product.originalPricePence / 100,
       color: product.colour,
       sizes: [size],
+      variants: [{
+        id: variant.id,
+        size,
+        stockQuantity: variant.stockQuantity,
+      }],
       imagePosition: product.imagePosition,
       ...(product.badge ? { badge: product.badge } : {}),
     });

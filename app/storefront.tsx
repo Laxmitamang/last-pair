@@ -1,33 +1,42 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useBasket } from "./basket";
 import type { Product } from "./products";
 
-type CartLine = Product & { quantity:number; selectedSize:string };
 type Customer = { name:string; email:string };
 const categories = ["All", "Trainers", "Running", "Casual"] as const;
 const money = (n:number) => new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP",maximumFractionDigits:0}).format(n);
 
 export function Storefront({products,customer}:{products:Product[];customer:Customer|null}) {
+  const { addItem, itemCount, openBasket } = useBasket();
   const [category,setCategory] = useState<(typeof categories)[number]>("All");
   const [query,setQuery] = useState("");
-  const [cart,setCart] = useState<CartLine[]>([]);
-  const [cartOpen,setCartOpen] = useState(false);
   const [menuOpen,setMenuOpen] = useState(false);
   const [selectedSizes,setSelectedSizes] = useState<Record<string,string>>({});
   const visible = useMemo(() => products.filter(p => (category === "All" || p.category === category) && `${p.name} ${p.brand} ${p.color}`.toLowerCase().includes(query.toLowerCase())),[products,category,query]);
-  const itemCount = cart.reduce((n,p)=>n+p.quantity,0);
-  const subtotal = cart.reduce((n,p)=>n+p.price*p.quantity,0);
   const accountLabel = customer ? customer.name.trim().split(/\s+/)[0] || "My account" : "Sign in";
   const accountHref = customer ? "/account" : "/login";
 
   function add(product:Product){
     const selectedSize = selectedSizes[product.id] || product.sizes[0];
+    const variant = product.variants.find((item) => item.size === selectedSize);
+    if (!variant) return;
     setSelectedSizes(s=>({...s,[product.id]:selectedSize}));
-    setCart(current=>{const match=current.find(p=>p.id===product.id&&p.selectedSize===selectedSize);return match?current.map(p=>p===match?{...p,quantity:p.quantity+1}:p):[...current,{...product,selectedSize,quantity:1}]});
-    setCartOpen(true);
+    addItem({
+      productId: product.id,
+      name: product.name,
+      brand: product.brand,
+      color: product.color,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      imagePosition: product.imagePosition,
+    }, {
+      variantId: variant.id,
+      size: variant.size,
+      stockQuantity: variant.stockQuantity,
+    });
   }
-  function change(id:string,size:string,delta:number){setCart(c=>c.map(p=>p.id===id&&p.selectedSize===size?{...p,quantity:p.quantity+delta}:p).filter(p=>p.quantity>0))}
 
   return <main>
     <div className="announcement">Student budget. Proper shoes. <span>New clearance drops every Friday →</span></div>
@@ -35,7 +44,7 @@ export function Storefront({products,customer}:{products:Product[];customer:Cust
       <a className="brand" href="#top">LAST PAIR<span>●</span></a>
       <button className="menu-button" onClick={()=>setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>Menu</button>
       <nav className={menuOpen?"nav-links open":"nav-links"}><a href="#drop">Latest drop</a><a href="#how">How it works</a><a href="#mission">Our mission</a><a className="mobile-account-link" href={accountHref}>{accountLabel}</a></nav>
-      <div className="header-actions"><a className="header-account-link" href={accountHref}>{accountLabel}</a><button className="cart-button" onClick={()=>setCartOpen(true)}>Bag <span>{itemCount}</span></button></div>
+      <div className="header-actions"><a className="header-account-link" href={accountHref}>{accountLabel}</a><button className="cart-button" onClick={openBasket}>Bag <span>{itemCount}</span></button></div>
     </header>
 
     <section className="shoe-hero" id="top">
@@ -64,7 +73,5 @@ export function Storefront({products,customer}:{products:Product[];customer:Cust
     <section className="signup"><div><p className="eyebrow">Do not miss your size</p><h2>Friday drops.<br/>No inbox clutter.</h2></div><form onSubmit={e=>e.preventDefault()}><label><span className="sr-only">Email address</span><input type="email" placeholder="you@university.ac.uk"/><button>Join the drop list →</button></label><small>Prototype signup — email delivery coming soon.</small></form></section>
     <footer><a className="brand inverse" href="#top">LAST PAIR<span>●</span></a><p>Better shoes for smaller budgets.<br/>Sourced in London, found for you.</p><div><a href="#drop">Shop</a><a href="#how">How it works</a><a href="#mission">About</a></div><small>© 2026 Last Pair. Prototype store. Product names and labels are fictional; no brand partnerships are implied.</small></footer>
 
-    {cartOpen&&<button className="scrim" onClick={()=>setCartOpen(false)} aria-label="Close bag"/>}
-    <aside className={cartOpen?"cart-drawer open":"cart-drawer"} aria-hidden={!cartOpen}><div className="drawer-heading"><div><p className="eyebrow">Your pairs</p><h2>Bag <span>{itemCount}</span></h2></div><button onClick={()=>setCartOpen(false)}>×</button></div><div className="cart-lines">{!cart.length?<div className="empty-cart"><p>No pairs yet.</p><span>Your size might not wait around.</span></div>:cart.map(p=><div className="cart-line" key={`${p.id}-${p.selectedSize}`}><div className="cart-thumb" style={{backgroundPosition:p.imagePosition}}/><div><p className="line-brand">{p.brand}</p><h3>{p.name}</h3><p>UK {p.selectedSize} · {money(p.price)}</p><div className="quantity"><button onClick={()=>change(p.id,p.selectedSize,-1)}>−</button><span>{p.quantity}</span><button onClick={()=>change(p.id,p.selectedSize,1)}>+</button></div></div></div>)}</div><div className="drawer-footer"><div><span>Subtotal</span><strong>{money(subtotal)}</strong></div><p>You have saved {money(cart.reduce((n,p)=>n+(p.originalPrice-p.price)*p.quantity,0))} against retail.</p><button disabled={!cart.length}>Prototype checkout <span>→</span></button><small>No payment will be taken in this prototype.</small></div></aside>
   </main>
 }

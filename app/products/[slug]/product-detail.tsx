@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useBasket } from "../../basket";
 import type { ProductDetail } from "../../products";
 
 const money = (value: number) =>
@@ -12,6 +13,7 @@ const money = (value: number) =>
   }).format(value);
 
 export function ProductDetailView({ product }: { product: ProductDetail }) {
+  const { addItem, itemCount, openBasket } = useBasket();
   const firstAvailable = product.variants.find((variant) => variant.stockQuantity > 0);
   const [selectedVariantId, setSelectedVariantId] = useState(firstAvailable?.id ?? "");
   const [added, setAdded] = useState(false);
@@ -21,6 +23,20 @@ export function ProductDetailView({ product }: { product: ProductDetail }) {
 
   function addToBag() {
     if (!selectedVariant) return;
+    addItem({
+      productId: product.id,
+      name: product.name,
+      brand: product.brand,
+      color: product.color,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      imagePosition: product.imagePosition,
+      imageUrl: product.imageUrl,
+    }, {
+      variantId: selectedVariant.id,
+      size: selectedVariant.size,
+      stockQuantity: selectedVariant.stockQuantity,
+    });
     setAdded(true);
   }
 
@@ -30,7 +46,7 @@ export function ProductDetailView({ product }: { product: ProductDetail }) {
       <header className="product-detail-header">
         <Link className="brand" href="/">LAST PAIR<span>●</span></Link>
         <Link href="/#drop">← Back to the drop</Link>
-        <Link href="/account">My account</Link>
+        <div className="product-detail-actions"><Link href="/account">My account</Link><button className="cart-button" onClick={openBasket}>Bag <span>{itemCount}</span></button></div>
       </header>
 
       <section className="product-detail-layout">
@@ -92,12 +108,12 @@ export function ProductDetailView({ product }: { product: ProductDetail }) {
             disabled={!selectedVariant}
             onClick={addToBag}
           >
-            <span>{added ? `Size ${selectedVariant?.size} selected` : "Add to prototype bag"}</span>
+            <span>{added ? `Size ${selectedVariant?.size} added` : "Add to bag"}</span>
             <span>{added ? "✓" : "+"}</span>
           </button>
           {added && (
             <p className="product-add-note" role="status">
-              Selection confirmed. Cross-page bag persistence is our next shopping feature.
+              Added to your bag. It will remain available while you continue browsing.
             </p>
           )}
 

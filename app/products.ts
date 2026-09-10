@@ -7,11 +7,16 @@ export type Product = {
   originalPrice: number;
   color: string;
   sizes: string[];
+  variants: Array<{
+    id: string;
+    size: string;
+    stockQuantity: number;
+  }>;
   imagePosition: string;
   badge?: string;
 };
 
-export type ProductDetail = Omit<Product, "sizes"> & {
+export type ProductDetail = Omit<Product, "sizes" | "variants"> & {
   description: string;
   imageUrl: string | null;
   variants: Array<{
