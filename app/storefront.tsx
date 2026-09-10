@@ -49,9 +49,9 @@ export function Storefront({products,customer}:{products:Product[];customer:Cust
       <div className="section-heading"><div><p className="eyebrow">The latest drop</p><h2>Good shoes.<br/>Better timing.</h2></div><p>Clearance does not mean compromise. Every pair is unused, checked and priced against its original retail value.</p></div>
       <div className="shop-controls"><div className="filters">{categories.map(c=><button key={c} className={category===c?"active":""} onClick={()=>setCategory(c)}>{c}</button>)}</div><label className="search-field"><span className="sr-only">Search shoes</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search brand, style or colour"/><span>⌕</span></label></div>
       <div className="product-grid">{visible.map((p,i)=><article className="product-card" key={p.id}>
-        <div className="shoe-product-image" style={{backgroundPosition:p.imagePosition}}>{p.badge&&<span className="badge">{p.badge}</span>}<span className="index">0{i+1}</span></div>
+        <a href={`/products/${p.id}`} className="shoe-product-image" style={{backgroundPosition:p.imagePosition}} aria-label={`View ${p.name}`}>{p.badge&&<span className="badge">{p.badge}</span>}<span className="index">0{i+1}</span></a>
         <div className="product-kicker"><span>{p.brand}</span><span>{p.category}</span></div>
-        <div className="product-info"><div><h3>{p.name}</h3><p>{p.color}</p></div><div className="price"><strong>{money(p.price)}</strong><s>{money(p.originalPrice)}</s></div></div>
+        <div className="product-info"><div><h3><a href={`/products/${p.id}`}>{p.name}</a></h3><p>{p.color}</p></div><div className="price"><strong>{money(p.price)}</strong><s>{money(p.originalPrice)}</s></div></div>
         <div className="size-row"><span>UK size</span><div>{p.sizes.map(size=><button key={size} className={(selectedSizes[p.id]||p.sizes[0])===size?"selected":""} onClick={()=>setSelectedSizes(s=>({...s,[p.id]:size}))}>{size}</button>)}</div></div>
         <button className="add-button" onClick={()=>add(p)}>Add size {selectedSizes[p.id]||p.sizes[0]} to bag <span>+</span></button>
       </article>)}</div>

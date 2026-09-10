@@ -10,3 +10,13 @@ export type Product = {
   imagePosition: string;
   badge?: string;
 };
+
+export type ProductDetail = Omit<Product, "sizes"> & {
+  description: string;
+  imageUrl: string | null;
+  variants: Array<{
+    id: string;
+    size: string;
+    stockQuantity: number;
+  }>;
+};
